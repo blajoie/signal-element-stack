@@ -1,5 +1,6 @@
 
 from __future__ import print_function
+from __future__ import division
 
 import numpy as np
 import scipy as sp
@@ -11,7 +12,7 @@ import re
 import os
 import math
 
-#plt.interactive(True)
+__version__ = "1.0"
 
 def main():
 
@@ -27,6 +28,7 @@ def main():
     parser.add_argument('-sm', '--sortMatrix',dest='sortMatrix', action='store_true', help='sort pile up matrix by total row signal, descending')
     parser.add_argument('-mp', '--midpointMode',dest='midpointMode', action='store_true', help='use midpoint of element, otherwise will assume TSS')
     parser.add_argument('-v', '--verbose', dest='verbose',  action='count', help='Increase verbosity (specify multiple times for more)')
+    parser.add_argument('--version', action='version', version='%(prog)s '+__version__)
     
     args=parser.parse_args()
     

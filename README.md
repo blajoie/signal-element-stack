@@ -15,7 +15,7 @@ single-element-stack/
 
 ## Installation
 
-The main requirements are numpy
+The main requirements are numpy, scipy, matplotlib
 
 You can install the dependencies with
 
@@ -40,7 +40,7 @@ $ python scripts/signal-element-stack.py --help
 usage: signal-element-stack.py [-h] -i SIGNALTRACK -e ELEMENTTRACK -g GENOME
                                [-w PILEUPWIDTH] [-b NUM_BINS]
                                [-ya YAXISRANGE [YAXISRANGE ...]]
-                               [-sc SIGNALCOLUMN] [-sm] [-mp] [-v]
+                               [-sc SIGNALCOLUMN] [-sm] [-mp] [-v] [--version]
 
 signal pile up plot for bedGraph/wiggle tracks
 
@@ -69,7 +69,9 @@ optional arguments:
                         (default: False)
   -v, --verbose         Increase verbosity (specify multiple times for more)
                         (default: None)
-                        
+  --version             show program's version number and exit                        
+  
+  
 ## Usage Examples
 
 ```
