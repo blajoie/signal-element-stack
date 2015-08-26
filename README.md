@@ -71,10 +71,9 @@ optional arguments:
                         (default: None)
   --version             show program's version number and exit                        
   
-  
-## Usage Examples
-
 ```
+
+## Usage Examples
 
 ## Change Log
 
