@@ -23,10 +23,10 @@ def main():
     parser.add_argument('-g', '--genome', dest='genome', type=str, required=True, help='genome chromosome length file')
     parser.add_argument('-w', '--width', dest='pileUpWidth', type=int, required=False, default=500, help='width of pile up plot (in BP)')
     parser.add_argument('-b', '--num_bins', dest='num_bins', type=int, required=False, default=500, help='number of num_bins for pile up plot width')
-    parser.add_argument('-ya','--yaxisrange', dest='yaxisrange', type=float, nargs='+', required=False, default=[0,0], help='y-axis for aggregrate plot')
-    parser.add_argument('-sc', '--signalcolumn', dest='signalColumn', type=int, required=False, default=3, help='signal column number in bed/bedgraph/wig/tsv file')
-    parser.add_argument('-sm', '--sortMatrix',dest='sortMatrix', action='store_true', help='sort pile up matrix by total row signal, descending')
-    parser.add_argument('-mp', '--midpointMode',dest='midpointMode', action='store_true', help='use midpoint of element, otherwise will assume TSS')
+    parser.add_argument('--ya','--yaxisrange', dest='yaxisrange', type=float, nargs='+', required=False, default=[0,0], help='y-axis for aggregrate plot')
+    parser.add_argument('--sc', '--signalcolumn', dest='signalColumn', type=int, required=False, default=3, help='signal column number in bed/bedgraph/wig/tsv file')
+    parser.add_argument('--sm', '--sortMatrix',dest='sortMatrix', action='store_true', help='sort pile up matrix by total row signal, descending')
+    parser.add_argument('--mp', '--midpointMode',dest='midpointMode', action='store_true', help='use midpoint of element, otherwise will assume TSS')
     parser.add_argument('-v', '--verbose', dest='verbose',  action='count', help='Increase verbosity (specify multiple times for more)')
     parser.add_argument('--version', action='version', version='%(prog)s '+__version__)
     
@@ -381,6 +381,7 @@ def process_elements(elementTrack,midpointMode,chr_dict,pileUpWidth,verboseprint
         start=int(tmpArr[1])
         end=int(tmpArr[2])
         name=tmpArr[3]
+        name = str(len(elements))+'__'+name
         midpoint=int((start+end)/2) # always round up
         
         anchor=midpoint
