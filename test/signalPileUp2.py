@@ -1,6 +1,5 @@
 
 from __future__ import print_function
-from __future__ import division
 
 import numpy as np
 import scipy as sp
@@ -12,7 +11,7 @@ import re
 import os
 import math
 
-__version__ = "1.0"
+#plt.interactive(True)
 
 def main():
 
@@ -28,7 +27,6 @@ def main():
     parser.add_argument('-sm', '--sortMatrix',dest='sortMatrix', action='store_true', help='sort pile up matrix by total row signal, descending')
     parser.add_argument('-mp', '--midpointMode',dest='midpointMode', action='store_true', help='use midpoint of element, otherwise will assume TSS')
     parser.add_argument('-v', '--verbose', dest='verbose',  action='count', help='Increase verbosity (specify multiple times for more)')
-    parser.add_argument('--version', action='version', version='%(prog)s '+__version__)
     
     args=parser.parse_args()
     
@@ -88,7 +86,7 @@ def main():
     num_bins=int(math.ceil((pileUpWidth*2)/bin_size))
     if((num_bins % 2) == 0): # force num_bins to be odd
         num_bins=num_bins + 1 
-    pileUpWidth=int((num_bins*bin_size)/2)
+    pileUpWidth=((num_bins*bin_size)/2)
     
     pileUpMatrix_sum=np.zeros((element_size,num_bins),dtype=np.float32)
     pileUpMatrix_count=np.zeros((element_size,num_bins),dtype=np.int)
@@ -105,8 +103,6 @@ def main():
     elementIndex=0
     tmpElement=elements[elementIndex]
  
-    verboseprint("")
-    
     # read through the signal tracks
     verboseprint("processing signal vector")
     if signalTrack.endswith('.gz'):
@@ -170,8 +166,7 @@ def main():
             continue
         if chromosome == tmpElement[0] and end < tmpElement[1]:
             continue
-       
-       # skip _larger_ signals
+        # skip _larger_ signals
         if elementIndex == (element_size-1) and chromosome > tmpElement[0]:
             continue
         if elementIndex == (element_size-1) and chromosome == tmpElement[0] and start > tmpElement[1]:
@@ -180,11 +175,9 @@ def main():
         # get offset into element, handle bounds
         startOffset=(start-tmpElement[1])
         endOffset=(end-tmpElement[1])
-        startIdx=int(max(0,(startOffset/bin_size)))
-        endIdx=int(min((num_bins-1),(endOffset/bin_size)))
-        x = np.arange(startIdx,endIdx+1,dtype=int)
-        #print("x=",x)
-        #print("signal=",signal)
+        startIdx=max(0,(startOffset/bin_size))
+        endIdx=min((num_bins-1),(endOffset/bin_size))
+        x = np.arange(startIdx,endIdx+1)
         
         #print("\tOVERLAP",elementIndex,elements[elementIndex],startIdx,endIdx,x)
         
@@ -199,9 +192,9 @@ def main():
 
             startOffset=(start-elements[tmpElementIndex][1])
             endOffset=(end-elements[tmpElementIndex][1])
-            startIdx=int(max(0,(startOffset/bin_size)))
-            endIdx=int(min((num_bins-1),(endOffset/bin_size)))
-            x = np.arange(startIdx,endIdx+1,dtype=int)
+            startIdx=max(0,(startOffset/bin_size))
+            endIdx=min((num_bins-1),(endOffset/bin_size))
+            x = np.arange(startIdx,endIdx+1)
             #print("\tOVERLAP",tmpElementIndex,elements[tmpElementIndex],startIdx,endIdx,x)
             
             #print("\t\tlogging",signal,pileUpMatrix_sum[tmpElementIndex,x])
@@ -224,7 +217,7 @@ def main():
         aggregrate=aggregrate/counts
     
     np.set_printoptions(threshold='nan')
-    #print(aggregrate,counts)
+    print(aggregrate,counts)
     
     if((len(yaxisrange) != 2) or (yaxisrange[0] == yaxisrange[1])):
         yaxisrange=[0,max(aggregrate)]
@@ -335,14 +328,13 @@ def process_genome(genome):
     for line in g_fh:
         line=line.rstrip("\n")
         
-        if line.startswith("track") or line.startswith("#") or line.startswith("chrom"):
+        if line.startswith("track") or line.startswith("#"):
             continue
         
         tmpArr=line.split("\t")
         
         start=1
-        end=1
-        if(len(tmpArr) >= 3):
+        if(len(tmpArr) == 3):
             start=int(tmpArr[1])
             end=int(tmpArr[2])
         
