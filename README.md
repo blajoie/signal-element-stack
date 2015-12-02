@@ -4,7 +4,7 @@
 &nbsp;&nbsp;
 <img height=30 src='http://my5C.umassmed.edu/images/umasslogo.gif' />
 
-# single-element-stack
+# signal-element-stack
 
 stack/aggregrate signal around a set of elements/features
 
