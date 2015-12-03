@@ -156,8 +156,6 @@ def main():
         if elementIndex == (element_size-1) and chromosome == tmpElement[0] and start > tmpElement[1]:
             continue
         
-        #print(tmpArr)
-        
         while( ( (chromosome > tmpElement[0]) or ((chromosome == tmpElement[0]) and  (start > tmpElement[3])) ) and (elementIndex < (element_size-1))):
             elementIndex=elementIndex+1
             tmpElement=elements[elementIndex]
@@ -210,8 +208,7 @@ def main():
             #print("\t\tlogged",signal,pileUpMatrix_sum[tmpElementIndex,x])
             
             offset=offset+1
-    
-    
+        
     # done read file - get mean
     pileUpMatrix_sum = pileUpMatrix_sum / pileUpMatrix_count
     
@@ -222,9 +219,6 @@ def main():
     aggregrate=np.nansum(pileUpMatrix_sum,axis=0)
     with np.errstate(invalid='ignore'):
         aggregrate=aggregrate/counts
-    
-    np.set_printoptions(threshold='nan')
-    #print(aggregrate,counts)
     
     if((len(yaxisrange) != 2) or (yaxisrange[0] == yaxisrange[1])):
         yaxisrange=[0,max(aggregrate)]
@@ -254,8 +248,10 @@ def main():
     
     # sort by rowsums, get top 25% or 5000 idx, descending order
     idx = np.arange(0,len(rowsums))
-    if(sortMatrix == 1):
-        idx = rowsums.argsort()[::-1][:max(5000,int(pileUpMatrix_sum.shape[0]*.25))]
+    if sortMatrix:
+        good = np.where(~np.isnan(rowsums))
+        idx = rowsums.argsort()[::-1]
+        idx = idx[good][:max(5000,int(pileUpMatrix_sum.shape[0]*.25))]
     
     # open output file
     out_fh=gzip.open(pileUpName+'.matrix.gz',"wb")
@@ -276,13 +272,13 @@ def main():
     print("\n",sep="",end="",file=out_fh)
     
     for i,v in enumerate(pileUpMatrix_sum[idx,:]):
-        if((sortMatrix == 1) and (rowsums[idx[i]] == 0)): # remove blank rows, if sort mode enabled
+    
+        if((sortMatrix) and ((rowsums[idx[i]] == 0) or (np.isnan(rowsums[idx[i]]))) ): # remove blank rows, if sort mode enabled
             continue
+        
         print("element_",elements[idx[i]][5],"\t","\t".join(map(str,v)),sep="",file=out_fh) 
     
     out_fh.close()
-                    
-                    
     
     verboseprint("")
     verboseprint("")
