@@ -27,6 +27,7 @@ def main():
     parser.add_argument('--sc', '--signalcolumn', dest='signalColumn', type=int, required=False, default=3, help='signal column number in bed/bedgraph/wig/tsv file')
     parser.add_argument('--sm', '--sortMatrix',dest='sortMatrix', action='store_true', help='sort pile up matrix by total row signal, descending')
     parser.add_argument('--mp', '--midpointMode',dest='midpointMode', action='store_true', help='use midpoint of element, otherwise will assume TSS')
+    parser.add_argument('--az', '--assumezero',dest='assume_zero', action='store_true', help='assume 0s for missing signals')
     parser.add_argument('-v', '--verbose', dest='verbose',  action='count', help='Increase verbosity (specify multiple times for more)')
     parser.add_argument('--version', action='version', version='%(prog)s '+__version__)
     
@@ -41,6 +42,7 @@ def main():
     signalColumn=args.signalColumn
     sortMatrix=args.sortMatrix
     midpointMode=args.midpointMode
+    assume_zero=args.assume_zero
     verbose=args.verbose
     
     verboseprint = print if verbose else lambda *a, **k: None
@@ -211,6 +213,8 @@ def main():
         
     # done read file - get mean
     pileUpMatrix_sum = pileUpMatrix_sum / pileUpMatrix_count
+    if assume_zero:
+        pileUpMatrix_sum = np.nan_to_num(pileUpMatrix_sum)
     
     # get counts per col of non0
     counts = np.nansum(pileUpMatrix_sum!=0,axis=0)
