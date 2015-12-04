@@ -28,6 +28,7 @@ def main():
     parser.add_argument('--sm', '--sortMatrix',dest='sortMatrix', action='store_true', help='sort pile up matrix by total row signal, descending')
     parser.add_argument('--mp', '--midpointMode',dest='midpointMode', action='store_true', help='use midpoint of element, otherwise will assume TSS')
     parser.add_argument('--az', '--assumezero',dest='assume_zero', action='store_true', help='assume 0s for missing signals')
+    parser.add_argument('--me', '--maxelements',dest='max_elements', type=int, default= 5000, help='number of sorted elements(rowss) to keep when --sm is enabled')
     parser.add_argument('-v', '--verbose', dest='verbose',  action='count', help='Increase verbosity (specify multiple times for more)')
     parser.add_argument('--version', action='version', version='%(prog)s '+__version__)
     
@@ -43,6 +44,7 @@ def main():
     sortMatrix=args.sortMatrix
     midpointMode=args.midpointMode
     assume_zero=args.assume_zero
+    max_elements=args.max_elements
     verbose=args.verbose
     
     verboseprint = print if verbose else lambda *a, **k: None
@@ -73,7 +75,7 @@ def main():
     signalTrack_name=re.sub(".gz", "", signalTrack_name)
     elementTrack_name=os.path.basename(elementTrack)
     elementTrack_name=re.sub(".gz", "", elementTrack_name)
-    pileUpName=signalTrack_name+"__"+elementTrack_name
+    pileUpName=signalTrack_name+"__"+elementTrack_name+"__"+str(pileUpWidth)
     
     # read through the genome file
     chr_dict,genomeSize=process_genome(genome)
@@ -85,8 +87,6 @@ def main():
     verboseprint("\tdone\n")
     
     bin_size=int(max(math.ceil(((pileUpWidth*2)+1)/num_bins),1))
-    if((bin_size % 2) != 0): # force bin_size to be even
-        bin_size = bin_size + 1 
     num_bins=int(math.ceil((pileUpWidth*2)/bin_size))
     if((num_bins % 2) == 0): # force num_bins to be odd
         num_bins=num_bins + 1 
@@ -228,8 +228,8 @@ def main():
         yaxisrange=[0,max(aggregrate)]
 
     # plot the aggregrate signal
-    bin_starts = np.arange(-pileUpWidth,pileUpWidth,bin_size)
-    bin_midpoints = np.arange(-pileUpWidth+(bin_size/2),pileUpWidth+(bin_size/2),bin_size)
+    bin_starts = np.arange(-pileUpWidth,pileUpWidth+bin_size,bin_size)
+    bin_midpoints = np.arange(-pileUpWidth,pileUpWidth+bin_size,bin_size)
     
     # open output file
     agg=gzip.open(pileUpName+'.aggregrate.vector.gz',"wb")
@@ -255,7 +255,7 @@ def main():
     if sortMatrix:
         good = np.where(~np.isnan(rowsums))
         idx = rowsums.argsort()[::-1]
-        idx = idx[good][:max(5000,int(pileUpMatrix_sum.shape[0]*.25))]
+        idx = idx[good][:min(max_elements,max(max_element,int(pileUpMatrix_sum.shape[0]*.25)))]
     
     # open output file
     out_fh=gzip.open(pileUpName+'.matrix.gz',"wb")
@@ -271,7 +271,7 @@ def main():
     print("# midpointMode",midpointMode,sep="\t",file=out_fh)
     print("# verbose",verbose,sep="\t",file=out_fh)
     
-    for x in xrange(-pileUpWidth,pileUpWidth,bin_size):
+    for x in xrange(-pileUpWidth,pileUpWidth+bin_size,bin_size):
         print("\t","pos|",x,"__",x+(bin_size/2),"__",x+bin_size,sep="",end="",file=out_fh)
     print("\n",sep="",end="",file=out_fh)
     
