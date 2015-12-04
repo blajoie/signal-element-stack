@@ -261,7 +261,8 @@ def main():
         idx = rowsums.argsort()[::-1]
         idx = idx[good][:min(max_elements,max(max_elements,int(pileUpMatrix_sum.shape[0]*.25)))]
         verboseprint("\tdone")
-    
+        verboseprint("")
+        
     verboseprint("writing matrix")
     
     # open output file
