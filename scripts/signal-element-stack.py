@@ -12,7 +12,7 @@ import re
 import os
 import math
 
-__version__ = "1.01"
+__version__ = "1.02"
 
 def main():
 
@@ -255,10 +255,11 @@ def main():
     # sort by rowsums, get top 25% or 5000 idx, descending order
     idx = np.arange(0,len(rowsums))
     if sortMatrix:
+        verboseprint("sorting matrix")
         good = np.where(~np.isnan(rowsums))
         idx = rowsums.argsort()[::-1]
         idx = idx[good][:min(max_elements,max(max_elements,int(pileUpMatrix_sum.shape[0]*.25)))]
-        print("len of idx = ",len(idx),max_elements)
+        verboseprint("")
     
     # open output file
     out_fh=gzip.open(pileUpName+'.matrix.gz',"wb")
