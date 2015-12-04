@@ -59,6 +59,8 @@ def main():
     verboseprint("signalColumn",signalColumn,sep="\t")
     verboseprint("sortMatrix",sortMatrix,sep="\t")
     verboseprint("midpointMode",midpointMode,sep="\t")
+    verboseprint("assumeZero",assume_zero,sep="\t")
+    verboseprint("maxElements",max_elements,sep="\t")
     verboseprint("verbose",verbose,sep="\t")
     verboseprint("")
     
@@ -256,6 +258,7 @@ def main():
         good = np.where(~np.isnan(rowsums))
         idx = rowsums.argsort()[::-1]
         idx = idx[good][:min(max_elements,max(max_elements,int(pileUpMatrix_sum.shape[0]*.25)))]
+        print("len of idx = ",len(idx),max_elements)
     
     # open output file
     out_fh=gzip.open(pileUpName+'.matrix.gz',"wb")
