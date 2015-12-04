@@ -12,7 +12,7 @@ import re
 import os
 import math
 
-__version__ = "1.02"
+__version__ = "1.03"
 
 def main():
 
@@ -255,11 +255,14 @@ def main():
     # sort by rowsums, get top 25% or 5000 idx, descending order
     idx = np.arange(0,len(rowsums))
     if sortMatrix:
+        verboseprint("")
         verboseprint("sorting matrix")
         good = np.where(~np.isnan(rowsums))
         idx = rowsums.argsort()[::-1]
         idx = idx[good][:min(max_elements,max(max_elements,int(pileUpMatrix_sum.shape[0]*.25)))]
-        verboseprint("")
+        verboseprint("\tdone")
+    
+    verboseprint("writing matrix")
     
     # open output file
     out_fh=gzip.open(pileUpName+'.matrix.gz',"wb")
@@ -273,7 +276,11 @@ def main():
     print("# signalColumn",signalColumn,sep="\t",file=out_fh)
     print("# sortMatrix",sortMatrix,sep="\t",file=out_fh)
     print("# midpointMode",midpointMode,sep="\t",file=out_fh)
+    print("# assumeZero",assume_zero,sep="\t",file=out_fh)
+    print("# maxElements",max_elements,sep="\t",file=out_fh)
     print("# verbose",verbose,sep="\t",file=out_fh)
+    print("# "+__version__,sep="\t",file=out_fh)
+    
     
     for x in xrange(-pileUpWidth,pileUpWidth,bin_size):
         print("\t","pos|",x,"__",x+(bin_size/2),"__",x+bin_size,sep="",end="",file=out_fh)
@@ -288,8 +295,9 @@ def main():
     
     out_fh.close()
     
+    verboseprint("\tdone")
     verboseprint("")
-    verboseprint("")
+
     
 def ensure_sorted(file):
     """ensure file is sorted by chr,start,end - return nLines
