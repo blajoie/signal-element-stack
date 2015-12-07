@@ -89,11 +89,12 @@ def main():
     verboseprint("\tdone\n")
     
     bin_size=int(max(math.ceil(((pileUpWidth*2)+1)/num_bins),1))
+    pileUpWidth=int((num_bins*bin_size)/2)
     num_bins=int(math.ceil((pileUpWidth*2)/bin_size))
+    
     if((num_bins % 2) == 0): # force num_bins to be odd
         num_bins=num_bins + 1 
-    pileUpWidth=int((num_bins*bin_size)/2)
-    
+        bin_size=int(max(math.ceil(((pileUpWidth*2)+1)/num_bins),1))
     pileUpMatrix_sum=np.zeros((element_size,num_bins),dtype=np.float32)
     pileUpMatrix_count=np.zeros((element_size,num_bins),dtype=np.int)
     
@@ -230,17 +231,16 @@ def main():
         yaxisrange=[0,max(aggregrate)]
 
     # plot the aggregrate signal
-    bin_starts = np.arange(-pileUpWidth,pileUpWidth,bin_size)
-    bin_midpoints = np.arange(-pileUpWidth,pileUpWidth,bin_size)
+    bin_starts = np.arange(-pileUpWidth,pileUpWidth+bin_size,bin_size)
     
     # open output file
     agg=gzip.open(pileUpName+'.aggregrate.vector.gz',"wb")
-    for i,bin in enumerate(bin_midpoints):
+    for i,bin in enumerate(bin_starts):
         print(bin_starts[i],bin_starts[i]+bin_size,bin,aggregrate[i],sep="\t",file=agg)
     print("\n",sep="",end="",file=agg)
     agg.close()
     
-    plt.plot(bin_midpoints,aggregrate)
+    plt.plot(bin_starts,aggregrate)
     plt.xlabel('genome distance from element-anchor')
     plt.ylabel('aggregrate signal')
     plt.title(signalTrack_name+"\n"+elementTrack_name)
@@ -283,8 +283,8 @@ def main():
     print("# "+__version__,sep="\t",file=out_fh)
     
     
-    for x in xrange(-pileUpWidth,pileUpWidth,bin_size):
-        print("\t","pos|",x,"__",x+(bin_size/2),"__",x+bin_size,sep="",end="",file=out_fh)
+    for i,bin in enumerate(bin_starts):
+        print("\t","pos|",bin,"__",bin+(bin_size/2),"__",bin+bin_size,sep="",end="",file=out_fh)
     print("\n",sep="",end="",file=out_fh)
     
     for i,v in enumerate(pileUpMatrix_sum[idx,:]):
