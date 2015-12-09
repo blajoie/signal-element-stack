@@ -12,7 +12,7 @@ import re
 import os
 import math
 
-__version__ = "1.03"
+__version__ = "1.04"
 
 def main():
 
